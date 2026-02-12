@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J'ai Faim — A Private Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0b0a;
+    --card: #161514;
+    --card-hover: #1e1d1a;
+    --gold: #c9a96e;
+    --gold-light: #e4d5b0;
+    --gold-dim: rgba(201,169,110,0.12);
+    --cream: #f5f0e8;
+    --text: #e8e4dc;
+    --muted: #8a847a;
+    --border: rgba(201,169,110,0.12);
+    --border-hover: rgba(201,169,110,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+    letter-spacing: 0.3px;
+  }
+
+  ::selection { background: var(--gold); color: var(--bg); }
+
+  /* SUBTLE TEXTURE */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 30% 20%, rgba(201,169,110,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(201,169,110,0.03) 0%, transparent 60%);
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 620px; margin: 0 auto; padding: 40px 24px 100px;
+  }
+
+  /* GOLD LINE ACCENTS */
+  .gold-line {
+    width: 60px; height: 1px; background: var(--gold); margin: 0 auto;
+    opacity: 0.5;
+  }
+
+  /* SCREENS */
+  .screen { display: none; animation: fadeIn 0.8s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ====== WELCOME SCREEN ====== */
+  .welcome {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 85vh; text-align: center;
+  }
+  .welcome-top-label {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 6px;
+    color: var(--gold); margin-bottom: 40px; opacity: 0.7;
+  }
+  .welcome-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300; font-size: 4.5rem; line-height: 1;
+    color: var(--cream); letter-spacing: 2px;
+  }
+  .welcome-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300; font-style: italic;
+    font-size: 1.15rem; color: var(--muted); margin-top: 16px;
+    letter-spacing: 1px;
+  }
+  .welcome-divider {
+    width: 1px; height: 60px; background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin: 40px auto;
+  }
+  .welcome-btn {
+    background: none; border: 1px solid var(--gold);
+    color: var(--gold); padding: 16px 48px;
+    font-family: 'Jost', sans-serif; font-weight: 400;
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 4px;
+    cursor: pointer; transition: all 0.4s ease;
+  }
+  .welcome-btn:hover {
+    background: var(--gold); color: var(--bg);
+  }
+
+  /* ====== STEP PROGRESS ====== */
+  .progress-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin: 40px 0 50px;
+  }
+  .prog-step {
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px;
+    color: rgba(201,169,110,0.2); transition: all 0.4s;
+  }
+  .prog-step.active { color: var(--gold); }
+  .prog-step.done { color: rgba(201,169,110,0.5); }
+  .prog-dot { width: 20px; height: 1px; background: rgba(201,169,110,0.15); }
+
+  /* ====== SECTION HEADINGS ====== */
+  .section-label {
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 5px;
+    color: var(--gold); text-align: center; margin-bottom: 12px; opacity: 0.7;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300; font-size: 2.4rem; text-align: center;
+    color: var(--cream); margin-bottom: 8px;
+  }
+  .section-sub {
+    text-align: center; color: var(--muted); font-size: 0.85rem;
+    margin-bottom: 40px; font-weight: 300;
+  }
+
+  /* ====== VIBE CARDS ====== */
+  .option-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .option-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 28px 20px;
+    cursor: pointer; transition: all 0.35s ease;
+    text-align: center; position: relative;
+  }
+  .option-card:hover {
+    border-color: var(--border-hover);
+    background: var(--card-hover);
+  }
+  .option-card.selected {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+  }
+  .option-card .card-icon {
+    font-size: 1.6rem; margin-bottom: 12px; display: block;
+    filter: grayscale(30%);
+  }
+  .option-card .card-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem; font-weight: 500; color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .option-card .card-desc {
+    font-size: 0.72rem; color: var(--muted); letter-spacing: 0.5px;
+  }
+
+  /* ====== PILL SELECTIONS ====== */
+  .cat-label {
+    font-size: 0.55rem; text-transform: uppercase; letter-spacing: 4px;
+    color: var(--muted); margin: 28px 0 12px; padding-left: 2px;
+  }
+  .cat-label:first-child { margin-top: 0; }
+  .pill-wrap { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 2px; padding: 10px 18px;
+    font-family: 'Jost', sans-serif; font-weight: 300;
+    font-size: 0.85rem; color: var(--text);
+    cursor: pointer; transition: all 0.3s ease;
+    user-select: none; letter-spacing: 0.3px;
+  }
+  .pill:hover { border-color: var(--border-hover); }
+  .pill.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: var(--gold-dim);
+  }
+
+  /* SWEETNESS */
+  .slider-section { margin: 32px 0; }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--muted); margin-bottom: 14px;
+  }
+  input[type="range"] {
+    -webkit-appearance: none; width: 100%; height: 1px;
+    background: var(--gold); opacity: 0.4; outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    background: var(--gold); border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 20px rgba(201,169,110,0.3);
+  }
+
+  /* TEXTAREA */
+  .special-textarea {
+    width: 100%; min-height: 100px; padding: 16px 20px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 2px; color: var(--text);
+    font-family: 'Jost', sans-serif; font-weight: 300;
+    font-size: 0.9rem; resize: vertical; outline: none;
+    letter-spacing: 0.3px; line-height: 1.6;
+    transition: border-color 0.3s;
+  }
+  .special-textarea:focus { border-color: var(--gold); }
+  .special-textarea::placeholder { color: var(--muted); }
+
+  /* ====== BUTTONS ====== */
+  .btn-row { display: flex; gap: 14px; margin-top: 44px; }
+  .btn {
+    flex: 1; padding: 15px 24px;
+    font-family: 'Jost', sans-serif; font-weight: 400;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 3px;
+    cursor: pointer; transition: all 0.35s ease; border-radius: 2px;
+    text-align: center;
+  }
+  .btn-gold {
+    background: var(--gold); color: var(--bg); border: 1px solid var(--gold);
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-gold:disabled { opacity: 0.25; cursor: not-allowed; }
+  .btn-ghost {
+    background: none; color: var(--muted); border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+
+  /* ====== RECEIPT ====== */
+  .receipt {
+    background: var(--cream); color: var(--bg); border-radius: 2px;
+    padding: 50px 40px 40px; max-width: 440px; margin: 0 auto;
+    position: relative;
+  }
+  .receipt::before {
+    content: ''; position: absolute; top: 0; left: 20px; right: 20px;
+    height: 1px; background: var(--gold);
+  }
+  .receipt-header { text-align: center; margin-bottom: 30px; }
+  .receipt-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600; font-size: 1.8rem; color: var(--bg);
+    letter-spacing: 2px;
+  }
+  .receipt-address {
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px;
+    color: #8a847a; margin-top: 4px;
+  }
+  .receipt-divider {
+    border: none; border-top: 1px dashed #c9a96e55;
+    margin: 20px 0;
+  }
+  .receipt-greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 1.1rem;
+    text-align: center; color: #5a5549; margin-bottom: 20px;
+  }
+  .receipt-cat {
+    font-size: 0.55rem; text-transform: uppercase; letter-spacing: 3px;
+    color: var(--gold); margin: 18px 0 8px; font-weight: 500;
+  }
+  .receipt-cat:first-of-type { margin-top: 0; }
+  .receipt-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0; font-size: 0.88rem; color: #3a3733;
+    font-family: 'Jost', sans-serif; font-weight: 300;
+  }
+  .receipt-item .r-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--gold); flex-shrink: 0;
+  }
+  .receipt-special {
+    font-style: italic; color: #6a6560; font-size: 0.85rem;
+    padding: 4px 0 4px 14px; border-left: 2px solid var(--gold);
+    margin-top: 4px;
+  }
+  .receipt-footer {
+    text-align: center; margin-top: 30px;
+    padding-top: 20px; border-top: 1px solid #d5cfc5;
+  }
+  .receipt-thankyou {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400; font-size: 1.3rem; color: #3a3733;
+  }
+  .receipt-tagline {
+    font-size: 0.55rem; text-transform: uppercase; letter-spacing: 4px;
+    color: #aaa599; margin-top: 8px;
+  }
+
+  /* RECEIPT ACTIONS */
+  .receipt-actions {
+    display: flex; gap: 12px; justify-content: center; margin-top: 30px;
+  }
+  .receipt-actions .btn { flex: 0; padding: 13px 28px; }
+
+  /* SWAP MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 4px; padding: 32px; max-width: 420px; width: 100%;
+    animation: fadeIn 0.3s ease;
+  }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--cream); margin-bottom: 18px;
+  }
+
+  /* FLAVOR GRID */
+  .flavor-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .flavor-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 2px; padding: 18px 20px;
+    cursor: pointer; transition: all 0.3s; text-align: left;
+  }
+  .flavor-card:hover { border-color: var(--border-hover); }
+  .flavor-card.selected { border-color: var(--gold); background: var(--gold-dim); }
+  .flavor-card .fl-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; color: var(--cream);
+  }
+  .flavor-card .fl-desc {
+    font-size: 0.7rem; color: var(--muted); margin-top: 2px;
+  }
+
+  @media (max-width: 520px) {
+    .welcome-name { font-size: 3rem; }
+    .section-title { font-size: 1.8rem; }
+    .option-grid { grid-template-columns: 1fr; }
+    .receipt { padding: 36px 24px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ====== WELCOME ====== -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome">
+      <div class="welcome-top-label">est. 2026</div>
+      <div class="welcome-name">J'ai Faim</div>
+      <div class="welcome-sub">the innest spot in town</div>
+      <div class="welcome-divider"></div>
+      <button class="welcome-btn" onclick="goTo('vibe')">Make Your Selection</button>
+    </div>
+  </div>
+
+  <!-- ====== VIBE ====== -->
+  <div class="screen" id="screen-vibe">
+    <div id="progressBar"></div>
+    <div class="section-label">Step One</div>
+    <div class="section-title">Your Mood</div>
+    <div class="section-sub">Select the essence of your drink</div>
+    <div class="option-grid" id="vibeGrid">
+      <div class="option-card" data-vibe="tropical">
+        <span class="card-icon">🌴</span>
+        <div class="card-label">Tropical</div>
+        <div class="card-desc">Island warmth, sunshine in a glass</div>
+      </div>
+      <div class="option-card" data-vibe="creamy">
+        <span class="card-icon">🍦</span>
+        <div class="card-label">Creamy & Rich</div>
+        <div class="card-desc">Indulgent, velvety, dessert-forward</div>
+      </div>
+      <div class="option-card" data-vibe="fresh">
+        <span class="card-icon">🌿</span>
+        <div class="card-label">Fresh & Clean</div>
+        <div class="card-desc">Crisp greens, clarity, renewal</div>
+      </div>
+      <div class="option-card" data-vibe="berry">
+        <span class="card-icon">🫐</span>
+        <div class="card-label">Berry Bliss</div>
+        <div class="card-desc">Sweet, tangy, deep & layered</div>
+      </div>
+      <div class="option-card" data-vibe="citrus">
+        <span class="card-icon">🍋</span>
+        <div class="card-label">Citrus Bright</div>
+        <div class="card-desc">Zesty, electric, invigorating</div>
+      </div>
+      <div class="option-card" data-vibe="decadent">
+        <span class="card-icon">🍫</span>
+        <div class="card-label">Decadent</div>
+        <div class="card-desc">Chocolate, indulgence, pure luxury</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('welcome')">Back</button>
+      <button class="btn btn-gold" id="btnVibeNext" disabled onclick="goTo('flavor')">Continue</button>
+    </div>
+  </div>
+
+  <!-- ====== THC FLAVOR ====== -->
+  <div class="screen" id="screen-flavor">
+    <div id="progressBar2"></div>
+    <div class="section-label">Step Two</div>
+    <div class="section-title">Your Sparkling Infusion</div>
+    <div class="section-sub">Choose a THC sparkling flavor as your base</div>
+    <div class="flavor-grid" id="flavorGrid">
+      <div class="flavor-card" data-flavor="Mango Pineapple">
+        <div class="fl-name">Mango Pineapple</div>
+        <div class="fl-desc">Tropical sweetness, golden & lush</div>
+      </div>
+      <div class="flavor-card" data-flavor="Strawberry Kiwi">
+        <div class="fl-name">Strawberry Kiwi</div>
+        <div class="fl-desc">Bright berry meets tangy green</div>
+      </div>
+      <div class="flavor-card" data-flavor="Watermelon Lime">
+        <div class="fl-name">Watermelon Lime</div>
+        <div class="fl-desc">Cool, refreshing, summer crush</div>
+      </div>
+      <div class="flavor-card" data-flavor="Passionfruit">
+        <div class="fl-name">Passionfruit</div>
+        <div class="fl-desc">Exotic, floral, deeply aromatic</div>
+      </div>
+      <div class="flavor-card" data-flavor="Peach">
+        <div class="fl-name">Peach</div>
+        <div class="fl-desc">Soft, nectar-sweet, delicate</div>
+      </div>
+      <div class="flavor-card" data-flavor="Blue Raspberry">
+        <div class="fl-name">Blue Raspberry</div>
+        <div class="fl-desc">Bold, vibrant, a touch nostalgic</div>
+      </div>
+      <div class="flavor-card" data-flavor="Blood Orange">
+        <div class="fl-name">Blood Orange</div>
+        <div class="fl-desc">Bittersweet citrus, ruby-hued</div>
+      </div>
+      <div class="flavor-card" data-flavor="Raspberry Lemonade">
+        <div class="fl-name">Raspberry Lemonade</div>
+        <div class="fl-desc">Tart, sweet, effervescent</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('vibe')">Back</button>
+      <button class="btn btn-gold" id="btnFlavorNext" disabled onclick="goTo('customize')">Continue</button>
+    </div>
+  </div>
+
+  <!-- ====== CUSTOMIZE ====== -->
+  <div class="screen" id="screen-customize">
+    <div id="progressBar3"></div>
+    <div class="section-label">Step Three</div>
+    <div class="section-title">Compose Your Blend</div>
+    <div class="section-sub">Curate the fruits, base, and finishing touches</div>
+
+    <div class="cat-label">Fruits</div>
+    <div class="pill-wrap" id="fruitPills"></div>
+
+    <div class="cat-label">Base</div>
+    <div class="pill-wrap" id="basePills"></div>
+
+    <div class="cat-label">Enhancements</div>
+    <div class="pill-wrap" id="boosterPills"></div>
+
+    <div class="slider-section">
+      <div class="cat-label">Sweetness</div>
+      <div class="slider-labels"><span>None</span><span>Generous</span></div>
+      <input type="range" id="sweetnessSlider" min="0" max="4" value="2">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('flavor')">Back</button>
+      <button class="btn btn-gold" id="btnCustomNext" disabled onclick="goTo('special')">Continue</button>
+    </div>
+  </div>
+
+  <!-- ====== SPECIAL REQUESTS ====== -->
+  <div class="screen" id="screen-special">
+    <div id="progressBar4"></div>
+    <div class="section-label">Step Four</div>
+    <div class="section-title">Special Requests</div>
+    <div class="section-sub">Anything else you'd like added? Extra ice, double fruit, a splash of something — it's your call</div>
+    <textarea class="special-textarea" id="specialInput" placeholder="e.g. extra ice, splash of vanilla, double mango, light on the sweetener..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo('customize')">Back</button>
+      <button class="btn btn-gold" onclick="goTo('receipt')">Place Order</button>
+    </div>
+  </div>
+
+  <!-- ====== RECEIPT ====== -->
+  <div class="screen" id="screen-receipt">
+    <div class="receipt" id="receiptCard">
+      <div class="receipt-header">
+        <div class="receipt-logo">J'ai Faim</div>
+        <div class="receipt-address">the innest spot in town</div>
+      </div>
+      <hr class="receipt-divider">
+      <div class="receipt-greeting">Thank you, Jordan.</div>
+      <hr class="receipt-divider">
+      <div id="receiptBody"></div>
+      <div id="receiptSpecial"></div>
+      <div class="receipt-footer">
+        <div class="receipt-thankyou">We hope you enjoy every sip.</div>
+        <div class="receipt-tagline">Crafted with care at J'ai Faim</div>
+      </div>
+    </div>
+
+    <div class="receipt-actions">
+      <button class="btn btn-ghost" onclick="goTo('customize')">Edit Order</button>
+      <button class="btn btn-ghost" onclick="restart()">Start Over</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SWAP MODAL -->
+<div class="modal-overlay" id="swapModal">
+  <div class="modal">
+    <div class="modal-title" id="swapTitle">Substitute</div>
+    <div class="pill-wrap" id="swapOptions"></div>
+    <div class="btn-row" style="margin-top:22px;">
+      <button class="btn btn-ghost" onclick="closeSwap()">Cancel</button>
+      <button class="btn btn-gold" onclick="confirmSwap()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {
+  vibe: null, flavor: null,
+  fruits: [], bases: [], boosters: [], sweetness: 2,
+  special: '',
+  swapTarget: null, swapCategory: null, swapChoice: null,
+};
+
+const DATA = {
+  fruits: {
+    tropical: { pre: ['Mango','Pineapple','Coconut'], extra: ['Banana','Peach','Papaya','Kiwi','Passion Fruit'] },
+    creamy:   { pre: ['Banana','Avocado','Strawberry'], extra: ['Mango','Peach','Cherry','Blueberry','Fig'] },
+    fresh:    { pre: ['Kiwi','Green Apple','Cucumber'], extra: ['Honeydew','Pear','Lemon','Mint Leaf','Celery'] },
+    berry:    { pre: ['Blueberry','Strawberry','Blackberry'], extra: ['Raspberry','Cherry','Açaí','Pomegranate','Banana'] },
+    citrus:   { pre: ['Orange','Lemon','Grapefruit'], extra: ['Blood Orange','Lime','Pineapple','Mango','Tangerine'] },
+    decadent: { pre: ['Banana','Strawberry','Cherry'], extra: ['Raspberry','Mango','Fig','Blueberry','Date'] },
+  },
+  bases: ['Oat Milk','Coconut Milk','Almond Milk','Vanilla Yogurt','Coconut Water','Ice & Water'],
+  boosters: ['Peanut Butter','Cacao Powder','Honey','Protein Powder','Hemp Seeds','Açaí Powder','Ginger','Turmeric','Vanilla Extract','Chia Seeds','Spirulina','Agave'],
+  sweetLabels: ['No sweetener','Light drizzle','Balanced','Generous','Extra sweet'],
+};
+
+const STEPS = ['vibe','flavor','customize','special','receipt'];
+
+function renderProgress(containerId, activeIdx) {
+  const labels = ['Mood','Infusion','Blend','Requests'];
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  const bar = document.createElement('div');
+  bar.className = 'progress-bar';
+  labels.forEach((l, i) => {
+    if (i > 0) { const dot = document.createElement('span'); dot.className = 'prog-dot'; bar.appendChild(dot); }
+    const s = document.createElement('span');
+    s.className = 'prog-step' + (i === activeIdx ? ' active' : i < activeIdx ? ' done' : '');
+    s.textContent = l;
+    bar.appendChild(s);
+  });
+  el.appendChild(bar);
+}
+
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+
+  const idx = STEPS.indexOf(screen);
+  if (idx >= 1) renderProgress('progressBar' + (idx > 1 ? idx : ''), idx - 1);
+
+  if (screen === 'customize') renderCustomize();
+  if (screen === 'receipt') buildReceipt();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// VIBE
+document.getElementById('vibeGrid').addEventListener('click', e => {
+  const card = e.target.closest('.option-card');
+  if (!card) return;
+  document.querySelectorAll('#vibeGrid .option-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.vibe = card.dataset.vibe;
+  state.fruits = [...DATA.fruits[state.vibe].pre];
+  document.getElementById('btnVibeNext').disabled = false;
+});
+
+// FLAVOR
+document.getElementById('flavorGrid').addEventListener('click', e => {
+  const card = e.target.closest('.flavor-card');
+  if (!card) return;
+  document.querySelectorAll('#flavorGrid .flavor-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.flavor = card.dataset.flavor;
+  document.getElementById('btnFlavorNext').disabled = false;
+});
+
+// CUSTOMIZE
+function renderCustomize() {
+  renderPills('fruitPills', [...new Set([...DATA.fruits[state.vibe].pre, ...DATA.fruits[state.vibe].extra])], state.fruits, 'fruits');
+  renderPills('basePills', DATA.bases, state.bases, 'bases');
+  renderPills('boosterPills', DATA.boosters, state.boosters, 'boosters');
+  document.getElementById('sweetnessSlider').value = state.sweetness;
+  document.getElementById('sweetnessSlider').oninput = e => { state.sweetness = parseInt(e.target.value); };
+  checkCustomValid();
+}
+
+function renderPills(id, options, selected, key) {
+  const wrap = document.getElementById(id);
+  wrap.innerHTML = options.map(o =>
+    `<div class="pill${selected.includes(o) ? ' active' : ''}" data-item="${o}" data-key="${key}">${o}</div>`
+  ).join('');
+  wrap.onclick = e => {
+    const pill = e.target.closest('.pill');
+    if (!pill) return;
+    const item = pill.dataset.item, k = pill.dataset.key;
+    if (state[k].includes(item)) state[k] = state[k].filter(x => x !== item);
+    else state[k].push(item);
+    renderPills(id, options, state[k], k);
+    checkCustomValid();
+  };
+}
+
+function checkCustomValid() {
+  document.getElementById('btnCustomNext').disabled = state.fruits.length === 0;
+}
+
+// RECEIPT
+function buildReceipt() {
+  state.special = document.getElementById('specialInput').value.trim();
+  let html = '';
+
+  html += `<div class="receipt-cat">THC Sparkling</div>`;
+  html += rItem(state.flavor);
+
+  html += `<div class="receipt-cat">Fruits</div>`;
+  state.fruits.forEach(f => html += rItem(f));
+
+  if (state.bases.length) {
+    html += `<div class="receipt-cat">Base</div>`;
+    state.bases.forEach(b => html += rItem(b));
+  }
+  if (state.boosters.length) {
+    html += `<div class="receipt-cat">Enhancements</div>`;
+    state.boosters.forEach(b => html += rItem(b));
+  }
+
+  html += `<div class="receipt-cat">Sweetness</div>`;
+  html += rItem(DATA.sweetLabels[state.sweetness]);
+
+  document.getElementById('receiptBody').innerHTML = html;
+
+  const specEl = document.getElementById('receiptSpecial');
+  if (state.special) {
+    specEl.innerHTML = `<div class="receipt-cat">Special Requests</div><div class="receipt-special">"${state.special}"</div>`;
+  } else {
+    specEl.innerHTML = '';
+  }
+}
+
+function rItem(label) {
+  return `<div class="receipt-item"><span class="r-dot"></span>${label}</div>`;
+}
+
+// SWAP (minimal for receipt editing)
+function openSwap(cat, current) {
+  state.swapCategory = cat; state.swapTarget = current; state.swapChoice = null;
+  document.getElementById('swapTitle').textContent = 'Replace ' + current;
+  let opts = [];
+  if (cat === 'fruits') opts = [...new Set([...DATA.fruits[state.vibe].pre,...DATA.fruits[state.vibe].extra])].filter(f => !state.fruits.includes(f));
+  else if (cat === 'bases') opts = DATA.bases.filter(b => !state.bases.includes(b));
+  else if (cat === 'boosters') opts = DATA.boosters.filter(b => !state.boosters.includes(b));
+  const grid = document.getElementById('swapOptions');
+  grid.innerHTML = opts.map(o => `<div class="pill" data-swap="${o}">${o}</div>`).join('');
+  grid.querySelectorAll('.pill').forEach(p => {
+    p.onclick = () => {
+      grid.querySelectorAll('.pill').forEach(pp => pp.classList.remove('active'));
+      p.classList.add('active');
+      state.swapChoice = p.dataset.swap;
+    };
+  });
+  document.getElementById('swapModal').classList.add('show');
+}
+function closeSwap() { document.getElementById('swapModal').classList.remove('show'); }
+function confirmSwap() {
+  if (!state.swapChoice) return;
+  const c = state.swapCategory;
+  state[c] = state[c].map(x => x === state.swapTarget ? state.swapChoice : x);
+  closeSwap(); buildReceipt();
+}
+
+function restart() {
+  state.vibe = null; state.flavor = null;
+  state.fruits = []; state.bases = []; state.boosters = [];
+  state.sweetness = 2; state.special = '';
+  document.querySelectorAll('.option-card,.flavor-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btnVibeNext').disabled = true;
+  document.getElementById('btnFlavorNext').disabled = true;
+  document.getElementById('specialInput').value = '';
+  goTo('welcome');
+}
+</script>
+</body>
+</html>
